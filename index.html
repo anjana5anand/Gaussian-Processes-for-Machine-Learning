@@ -6,72 +6,166 @@
 <title>Forecasting CO2 Levels on the Mauna Loa Dataset Using Gaussian Process Regression</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
   MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 <style>
   :root {
-    --paper: #EFF1ED;
-    --paper-raised: #F8F9F6;
-    --ink: #20241F;
-    --ink-soft: #4B5049;
-    --rule: #D8DBD3;
-    --accent: #A8402E;
-    --accent-soft: #C97A6A;
-    --sky: #3C6E68;
-    --max-w: 640px;
+    --paper: #EEF0EA;
+    --paper-raised: #F8F9F5;
+    --ink: #1E221C;
+    --ink-soft: #565C4F;
+    --ink-faint: #8A9080;
+    --rule: #D6D9CE;
+    --accent: #A63F26;
+    --accent-dim: #C97A5F;
+    --sky: #35635F;
+    --sky-dim: #E7EDE9;
+    --max-w: 660px;
   }
+
   * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
   body {
     margin: 0;
     background: var(--paper);
     color: var(--ink);
     font-family: 'Source Serif 4', Georgia, serif;
     font-size: 19px;
-    line-height: 1.65;
+    line-height: 1.68;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: var(--max-w); margin: 0 auto; padding: 5rem 1.5rem 6rem; }
-  header.masthead { margin-bottom: 3.5rem; }
+
+  ::selection { background: var(--accent-dim); color: #fff; }
+
+  .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    padding: 4.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 3.2rem;
+  }
+
+  .spark { display: block; width: 100%; height: auto; margin-bottom: 2.4rem; }
+  .spark path.line { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .spark path.fill { fill: url(#sparkFade); stroke: none; }
+
   .byline {
     font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 500;
     color: var(--ink-soft);
-    margin-bottom: 1.1rem;
+    letter-spacing: 0.01em;
+    margin-bottom: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .byline a { color: var(--sky); text-decoration: none; border-bottom: 1px solid currentColor; }
+  .byline .dot { color: var(--ink-faint); }
+  .byline a { color: var(--sky); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+  .byline a:hover { border-bottom-color: var(--sky); }
+
   h1 {
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 700;
-    font-size: 2.2rem;
-    line-height: 1.18;
-    letter-spacing: -0.01em;
-    margin: 0 0 1.1rem;
+    font-size: 2.35rem;
+    line-height: 1.16;
+    letter-spacing: -0.015em;
+    margin: 0 0 1.15rem;
+    max-width: 20ch;
   }
+
   .dek {
     font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 1.05rem;
+    font-weight: 400;
+    font-size: 1.08rem;
     line-height: 1.55;
     color: var(--ink-soft);
-    margin: 0;
-    max-width: 34rem;
+    margin: 0 0 1.8rem;
+    max-width: 36rem;
   }
+
+  /* ---------- Notebook callout ---------- */
+
+  .notebook-card {
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--sky-dim);
+    border: 1px solid #CBD8D1;
+    border-radius: 6px;
+    padding: 0.9rem 1.15rem;
+    max-width: 36rem;
+  }
+  .notebook-card .label {
+    font-size: 0.88rem;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .notebook-card .label strong { font-weight: 600; }
+  .notebook-card a.btn {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--sky);
+    padding: 0.5rem 0.9rem;
+    border-radius: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .notebook-card a.btn:hover { background: #294c48; }
+
+  /* ---------- Body ---------- */
+
+  article { padding-bottom: 6rem; }
+
   h2 {
     font-family: 'Source Serif 4', Georgia, serif;
     font-weight: 600;
-    font-size: 1.45rem;
+    font-size: 1.5rem;
     line-height: 1.3;
-    margin: 3rem 0 1.1rem;
+    margin: 3.4rem 0 1.15rem;
+    color: var(--ink);
   }
-  p { margin: 0 0 1.3rem; }
-  strong { font-weight: 600; }
-  figure { margin: 2.6rem 0; padding: 0; }
+
+  p { margin: 0 0 1.35rem; }
+  strong { font-weight: 600; color: var(--ink); }
+  em { font-style: italic; }
+
+  /* ---------- Pull-quote for key numeric findings ---------- */
+
+  .stat {
+    margin: 2.6rem 0;
+    padding: 0.2rem 0 0.2rem 1.4rem;
+    border-left: 3px solid var(--accent);
+  }
+  .stat p {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-style: italic;
+    font-size: 1.22rem;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0;
+  }
+  .stat .num { font-style: normal; font-weight: 700; color: var(--accent); }
+
+  /* ---------- Figures ---------- */
+
+  figure { margin: 2.7rem 0; padding: 0; }
   figure img {
     width: 100%;
     display: block;
-    border-radius: 4px;
+    border-radius: 5px;
     border: 1px solid var(--rule);
     background: var(--paper-raised);
   }
@@ -79,98 +173,151 @@
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 0.82rem;
     color: var(--ink-soft);
-    margin-top: 0.7rem;
+    margin-top: 0.75rem;
     line-height: 1.5;
   }
-  hr.section-break { border: none; border-top: 1px solid var(--rule); margin: 3.5rem 0; }
+  figcaption .fignum {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ---------- Footer ---------- */
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2.4rem 0 4rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  footer a { color: var(--sky); text-decoration: none; border-bottom: 1px solid currentColor; }
+
   @media (max-width: 480px) {
     body { font-size: 17.5px; }
-    h1 { font-size: 1.75rem; }
-    .wrap { padding: 3rem 1.25rem 4rem; }
+    .hero { padding: 3rem 0 2rem; }
+    h1 { font-size: 1.8rem; }
+    .stat p { font-size: 1.08rem; }
+    .notebook-card { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header class="masthead">
-    <div class="byline">Anjana &middot; <a href="#">github.com/anjana/co2-gpr-blog</a></div>
+  <div class="wrap hero">
+    <svg class="spark" viewBox="0 0 620 90" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#A63F26" stop-opacity="0.16"/>
+          <stop offset="100%" stop-color="#A63F26" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path class="fill" d="M0,78 L10,76 20,79 30,74 40,77 50,70 60,73 70,66 80,69 90,62 100,65 110,58 120,61 130,54 140,57 150,50 160,53 170,46 180,49 190,42 200,45 210,38 220,41 230,35 240,38 250,31 260,34 270,28 280,31 290,25 300,28 310,22 320,25 330,19 340,22 350,16 360,19 370,14 380,17 390,11 400,14 410,9 420,12 430,7 440,10 450,6 460,9 470,5 480,8 490,4 500,7 510,3 520,6 530,2 540,5 550,2 560,4 570,1 580,3 590,0 600,2 610,0 620,1 L620,90 L0,90 Z"/>
+      <path class="line" d="M0,78 L10,76 20,79 30,74 40,77 50,70 60,73 70,66 80,69 90,62 100,65 110,58 120,61 130,54 140,57 150,50 160,53 170,46 180,49 190,42 200,45 210,38 220,41 230,35 240,38 250,31 260,34 270,28 280,31 290,25 300,28 310,22 320,25 330,19 340,22 350,16 360,19 370,14 380,17 390,11 400,14 410,9 420,12 430,7 440,10 450,6 460,9 470,5 480,8 490,4 500,7 510,3 520,6 530,2 540,5 550,2 560,4 570,1 580,3 590,0 600,2 610,0 620,1"/>
+    </svg>
+
+    <div class="byline">
+      <span>Anjana</span>
+      <span class="dot">&middot;</span>
+      <a href="https://github.com/anjana5anand/Gaussian-Processes-for-Machine-Learning" target="_blank" rel="noopener">github.com/anjana5anand</a>
+    </div>
+
     <h1>Forecasting CO2 Levels on the Mauna Loa Dataset Using Gaussian Process Regression</h1>
+
     <p class="dek">Working through the kernel-design reasoning behind the scikit-learn Mauna Loa CO2 tutorial &mdash; why each piece of the model looks the way it does, not just what the code does.</p>
-  </header>
 
-  <p>This is an excerpt from Gaussian Processes for Machine Learning. It breaks down kernel engineering and hyperparameter optimization using gradient ascent on the log-marginal-likelihood.</p>
+    <div class="notebook-card">
+      <a class="btn" href="https://github.com/anjana5anand/Gaussian-Processes-for-Machine-Learning/blob/main/project_1.ipynb" target="_blank" rel="noopener">View notebook &rarr;</a>
+    </div>
+  </div>
 
-  <p>The monthly data of CO2 levels at Mauna Loa spanning 1958 to 2001 provides an interesting example of kernel regression, as there are a number of structures superimposed upon each other within that time span: a long-term trend, a year-on-year cycle, additional small peaks and troughs, and measurement errors. These structures are almost mutually exclusive, and hence require individual kernels added together.</p>
+  <div class="wrap">
+    <article>
 
-  <h2>Gaussian Process</h2>
+      <p>This is an excerpt from Gaussian Processes for Machine Learning. It breaks down kernel engineering and hyperparameter optimization using gradient ascent on the log-marginal-likelihood.</p>
 
-  <p>Gaussian processes aren't restricted to fitting a curve &mdash; they look at all possible curves which may account for your data, putting together all of those curves and weighting them based on their fit to produce something new. The output from the algorithm is a prediction and a measure of certainty along the entire predicted curve. This uncertainty can be considered as part of the output too, as a measure of confidence in the predictions made by the algorithm.</p>
+      <p>The monthly data of CO2 levels at Mauna Loa spanning 1958 to 2001 provides an interesting example of kernel regression as there are a number of structures superimposed upon each other within that time span, which include a long-term trend, a year-on-year cycle, additional small peaks and troughs, and measurement errors. These structures are almost mutually exclusive, and hence require individual kernels added together.</p>
 
-  <p>The kernel determines which curves are reasonable in the first place. Even before seeing any input data points, the kernel makes assumptions such as "close points are most likely to be similar" or "there is a pattern in here that recycles through something." The choice of kernel is a choice of belief in what the data looks like without even seeing it.</p>
+      <h2>Gaussian Process</h2>
 
-  <h2>Radial Basis Function</h2>
+      <p>Gaussian processes aren't restricted to fitting a curve, they look at all possible curves which may account for your data, putting together all of those curves and weighting them based on their fit to produce something new. The output from the algorithm is a prediction and a measure of certainty along the entire predicted curve. This uncertainty can be considered as part of the output, too, as a measure of confidence in the predictions made by the algorithm.</p>
 
-  <p>The most common kernel, and the one everything else in this post gets compared to, is the radial basis function (RBF). A small length-scale allows the function to wiggle and change quickly; a large one forces it to stay smooth and slow-moving, since points far apart are still treated as meaningfully connected.</p>
+      <p>The kernel determines which curves are reasonable in the first place. Even before seeing any input data points, the kernel makes assumptions such as "close points are most likely to be similar" or "there is a pattern in here that recycles through something." The choice of kernel is a choice of belief in what the data looks like without even seeing it.</p>
 
-  <h2>The math behind it</h2>
+      <h2>Radial Basis Function</h2>
 
-  <p>Why does a big length-scale keep the curve smooth? The RBF kernel is defined as:</p>
+      <p>The most common kernel, and the one everything else in this post gets compared to, is the radial basis function (RBF). A small length-scale allows the function to wiggle and change quickly; a large one forces it to stay smooth and slow-moving, since points far apart are still treated as meaningfully connected.</p>
 
-  $$k(x, x') = \sigma^2 \exp\left(-\frac{(x-x')^2}{2\ell^2}\right)$$
+      <h2>The math behind it</h2>
 
-  <p>$k(x, x')$ is just a number saying how tightly linked two points are: high means "these move together," near zero means "unrelated." That number depends only on how far apart $x$ and $x'$ are relative to $\ell$: when they're close relative to $\ell$, the exponent stays near 0 and $k(x,x')$ stays near its max; when they're far apart relative to $\ell$, the exponent turns sharply negative and $k(x,x')$ collapses toward 0.</p>
+      <p>Why does a big length-scale keep the curve smooth? The RBF kernel is defined as:</p>
 
-  <p>Here's what that means concretely. Our data spans about 44 years, with $\ell = 50$. Plugging in the largest possible gap:</p>
+      $$k(x, x') = \sigma^2 \exp\left(-\frac{(x-x')^2}{2\ell^2}\right)$$
 
-  $$\frac{(44)^2}{2(50)^2} = \frac{1936}{5000} \approx 0.387 \quad\Rightarrow\quad \exp(-0.387) \approx 0.68$$
+      <p>$k(x, x')$ is just a number saying how tightly linked two points are: high means "these move together," near zero means "unrelated." That number depends only on how far apart $x$ and $x'$ are relative to $\ell$: when they're close relative to $\ell$, the exponent stays near 0 and $k(x,x')$ stays near its max; when they're far apart relative to $\ell$, the exponent turns sharply negative and $k(x,x')$ collapses toward 0.</p>
 
-  <p>Even the two most distant points in the entire dataset still keep about 68% of their maximum possible connection &mdash; the length-scale is large enough that the model treats the whole 44 years as one connected story, which is exactly why the fitted trend is one smooth climb rather than something that wiggles or reverses.</p>
+      <p>Here's what that means concretely. Our data spans about 44 years, with $\ell = 50$. Plugging in the largest possible gap:</p>
 
-  <p>There is a long term rising trend to the data, the dips we see are seasonal changes captured in the data and smaller changes or irregularities. We need to pick a kernel based on everything that we have assumed about the dataset. These patterns seem independent so 1 kernel cannot do all the work. We will handle each of these separately and take the sum at the end.</p>
+      $$\frac{(44)^2}{2(50)^2} = \frac{1936}{5000} \approx 0.387 \quad\Rightarrow\quad \exp(-0.387) \approx 0.68$$
 
-  <p>1. Long term rising trend can be fitted using a radial basis function (RBF) kernel with the length scale parameter as 50. A length-scale that large means points decades apart are still treated as related, so there's no room for the curve to zigzag. This approach will ensure this component to be smooth. The length-scale and the amplitude are hyperparameters, they are the degrees of freedom the optimiser will tune when it fits the model.</p>
+      <div class="stat">
+        <p>Even the two most distant points in the entire dataset still keep about <span class="num">68%</span> of their maximum possible connection, the length-scale is large enough that the model treats the whole 44 years as one connected story, which is exactly why the fitted trend is one smooth climb rather than something that wiggles or reverses.</p>
+      </div>
 
-  <h2>The seasonal cycle</h2>
+      <p>There is a long term rising trend to the data, the dips we see are seasonal changes captured in the data and smaller changes or irregularities. We need to pick a kernel based on everything that we have assumed about the dataset. These patterns seem independent so 1 kernel cannot do all the work. We will handle each of these separately and take the sum at the end.</p>
 
-  <p>2. A purely periodic kernel will force it to look like the same pattern is present every year forever which is not true as we can see. We handle this by multiplying the RBF so the pattern will still repeat every year but its allowed to change its shape over the years. This seasonal variation is captured by the periodic exponential sine squared kernel with a fixed periodicity of 1 year. Here the RBF's length scale controls the decay time and is another free parameter which is separate from the periodic kernel's own length scale, which controls the shape of each yearly wave. This is also known as the <em>locally periodic kernel.</em></p>
+      <p>1. Long term rising trend can be fitted using a radial basis function (RBF) kernel with the length scale parameter as 50. A length-scale that large means points decades apart are still treated as related, so there's no room for the curve to zigzag. This approach will ensure this component to be smooth. The length-scale and the amplitude are hyperparameters, they are the degrees of freedom the optimiser will tune when it fits the model.</p>
 
-  <h2>The irregularities</h2>
+      <h2>The seasonal cycle</h2>
 
-  <p>3. The smaller irregularities can be explained by a rational quadratic kernel component. The rational quadratic kernel is different to the RBF kernel because it explains several length-scales and will accommodate more and different irregularities. The alpha controls how much mixing happens so a smaller alpha means blending a wide spread of length scales and a large alpha will make it collapse towards behaving like a single length RBF. We take a mixture because some irregularities are short and some stretch out for longer.</p>
+      <p>2. A purely periodic kernel will force it to look like the same pattern is present every year forever which is not true as we can see. We handle this by multiplying the RBF so the pattern will still repeat every year but its allowed to change its shape over the years. This seasonal variation is captured by the periodic exponential sine squared kernel with a fixed periodicity of 1 year. Here the RBF's length scale controls the decay time and is another free parameter which is separate from the periodic kernel's own length scale, which controls the shape of each yearly wave. This is also known as the <em>locally periodic kernel.</em></p>
 
-  <h2>The noise</h2>
+      <h2>The irregularities</h2>
 
-  <p>The noise in the dataset comes in two different forms, and one kernel can't explain both. Some of it is correlated over short stretches, local weather patterns nudging several consecutive readings in the same direction for a few weeks — and that gets picked up by an RBF kernel with a small length-scale. The rest is plain white noise, with no relationship from one point to the next, which the WhiteKernel accounts for. The relative amplitudes and the RBF's length-scale are further free parameters, so the model captures both the correlated changes and the pure randomness.</p>
+      <p>3. The smaller irregularities can be explained by a rational quadratic kernel component. The rational quadratic kernel is different to the RBF kernel because it explains several length-scales and will accommodate more and different irregularities. The alpha controls how much mixing happens so a smaller alpha means blending a wide spread of length scales and a large alpha will make it collapse towards behaving like a single length RBF. We take a mixture because some irregularities are short and some stretch out for longer.</p>
 
-  <figure>
-    <img src="images/plot1.png" alt="Mauna Loa CO2 measurements and the fitted Gaussian process forecast extrapolated to 2030">
-    <figcaption>The fitted Gaussian process &mdash; all four kernels summed together, trained on 1958&ndash;2001 data and extrapolated forward.</figcaption>
-  </figure>
+      <h2>The noise</h2>
 
-  <h2>Ouput</h2>
+      <p>The noise in the dataset comes in two different forms, and one kernel can't explain both. Some of it is correlated over short stretches, local weather patterns nudging several consecutive readings in the same direction for a few weeks and that gets picked up by an RBF kernel with a small length-scale. The rest is plain white noise, with no relationship from one point to the next, which the WhiteKernel accounts for. The relative amplitudes and the RBF's length-scale are further free parameters, so the model captures both the correlated changes and the pure randomness.</p>
 
-  <p>After fitting: the trend's length-scale lands at 51.6 years, longer than the dataset itself, meaning the model sees one uninterrupted climb. The seasonal decay length comes out around 91.5 years, more than double the data's span  so the yearly cycle barely drifts at all. The irregularities and noise terms are all small next to those two, meaning the structural kernels are explaining almost all the real variation, with little left over as unexplained randomness.</p>
+      <figure>
+        <img src="images/plot1.png" alt="Mauna Loa CO2 measurements and the fitted Gaussian process forecast extrapolated to 2030">
+        <figcaption><span class="fignum">Figure 1.</span> The fitted Gaussian process
+          ; all four kernels summed together, trained on 1958 - 2001 data and extrapolated forward.</figcaption>
+      </figure>
 
-  <h2>Where it breaks: a 15-year gap</h2>
+      <h2>Ouput</h2>
 
-  <p>Hiding 15 years of data (1975&ndash;1990) and refitting shows something worth noting: the mean prediction stays fairly accurate (about 0.38 ppm average error), but the model's own uncertainty roughly triples inside the gap. The trend and seasonal kernels are strong enough priors to coast through missing years on structure alone but a much longer gap, or a less steady trend, would eventually break the prediction itself, not just the confidence.</p>
+      <p>After fitting: the trend's length-scale lands at 51.6 years, longer than the dataset itself, meaning the model sees one uninterrupted climb. The seasonal decay length comes out around 91.5 years, more than double the data's span  so the yearly cycle barely drifts at all. The irregularities and noise terms are all small next to those two, meaning the structural kernels are explaining almost all the real variation, with little left over as unexplained randomness.</p>
 
-  <figure>
-    <img src="images/plot2.png" alt="Plot showing the 15-year hidden gap in the CO2 data, with the refit GP mean and 95% interval tracking the true hidden values closely">
-    <figcaption>Refitting without 1975&ndash;1990: the GP mean still tracks the true (hidden) values closely across the gap.</figcaption>
-  </figure>
+      <h2>Where it breaks: a 15-year gap</h2>
 
-  <figure>
-    <img src="images/plot3.png" alt="Zoomed-in view of the hidden gap showing the 95% confidence interval widening">
-    <figcaption>Zoomed in on the gap: the 95% interval visibly widens right where the model has no real data to anchor to.</figcaption>
-  </figure>
+      <p>Hiding 15 years of data (1975&ndash;1990) and refitting shows something worth noting: the mean prediction stays fairly accurate (about 0.38 ppm average error), but the model's own uncertainty roughly triples inside the gap. The trend and seasonal kernels are strong enough priors to coast through missing years on structure alone but a much longer gap, or a less steady trend, would eventually break the prediction itself, not just the confidence.</p>
 
-  <figure>
-    <img src="images/plot4.png" alt="Plot of predictive standard deviation over time, showing it roughly triples during the hidden gap">
-    <figcaption>The model's own uncertainty over time &mdash; it roughly triples during the hidden 15-year stretch, then drops back down the moment real data resumes.</figcaption>
-  </figure>
+      <figure>
+        <img src="images/plot2.png" alt="Plot showing the 15-year hidden gap in the CO2 data, with the refit GP mean and 95% interval tracking the true hidden values closely">
+        <figcaption><span class="fignum">Figure 2.</span> Refitting without 1975&ndash;1990: the GP mean still tracks the true (hidden) values closely across the gap.</figcaption>
+      </figure>
 
-</div>
+      <figure>
+        <img src="images/plot3.png" alt="Zoomed-in view of the hidden gap showing the 95% confidence interval widening">
+        <figcaption><span class="fignum">Figure 3.</span> Zoomed in on the gap: the 95% interval visibly widens right where the model has no real data to anchor to.</figcaption>
+      </figure>
+
+      <div class="stat">
+        <p>The model's own uncertainty roughly <span class="num">triples</span> inside the gap, then drops right back down the moment real data resumes.</p>
+      </div>
+
+      <figure>
+        <img src="images/plot4.png" alt="Plot of predictive standard deviation over time, showing it roughly triples during the hidden gap">
+        <figcaption><span class="fignum">Figure 4.</span> The model's own uncertainty over time; it roughly triples during the hidden 15-year stretch, then drops back down the moment real data resumes.</figcaption>
+      </figure>
+
+    </article>
+
+    <footer>
+      Anjana &middot; <a href="https://github.com/anjana5anand/Gaussian-Processes-for-Machine-Learning/blob/main/project_1.ipynb" target="_blank" rel="noopener">Full notebook on GitHub</a>
+    </footer>
+  </div>
+
 </body>
 </html>
