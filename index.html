@@ -264,7 +264,7 @@
       </div>
 
       <p>There is a long term rising trend to the data, the dips we see are seasonal changes captured in the data and smaller changes or irregularities. We need to pick a kernel based on everything that we have assumed about the dataset. These patterns seem independent so 1 kernel cannot do all the work. We will handle each of these separately and take the sum at the end.</p>
-
+      <h2>The Trend</h2>
       <p>1. Long term rising trend can be fitted using a radial basis function (RBF) kernel with the length scale parameter as 50. A length-scale that large means points decades apart are still treated as related, so there's no room for the curve to zigzag. This approach will ensure this component to be smooth. The length-scale and the amplitude are hyperparameters, they are the degrees of freedom the optimiser will tune when it fits the model.</p>
 
       <h2>The seasonal cycle</h2>
