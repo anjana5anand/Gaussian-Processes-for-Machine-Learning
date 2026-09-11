@@ -277,12 +277,11 @@
 
       <h2>The noise</h2>
 
-      <p>The noise in the dataset comes in two different forms, and one kernel can't explain both. Some of it is correlated over short stretches, local weather patterns nudging several consecutive readings in the same direction for a few weeks and that gets picked up by an RBF kernel with a small length-scale. The rest is plain white noise, with no relationship from one point to the next, which the WhiteKernel accounts for. The relative amplitudes and the RBF's length-scale are further free parameters, so the model captures both the correlated changes and the pure randomness.</p>
+      <p>The noise in the dataset comes in two different forms, and one kernel can't explain both. Some of it is correlated over short stretches, local weather patterns nudging several consecutive readings in the same direction for a few weeks — and that gets picked up by an RBF kernel with a small length-scale. The rest is plain white noise, with no relationship from one point to the next, which the WhiteKernel accounts for. The relative amplitudes and the RBF's length-scale are further free parameters, so the model captures both the correlated changes and the pure randomness.</p>
 
       <figure>
         <img src="images/plot1.png" alt="Mauna Loa CO2 measurements and the fitted Gaussian process forecast extrapolated to 2030">
-        <figcaption><span class="fignum">Figure 1.</span> The fitted Gaussian process
-          ; all four kernels summed together, trained on 1958 - 2001 data and extrapolated forward.</figcaption>
+        <figcaption><span class="fignum">Figure 1.</span> The fitted Gaussian process &mdash; all four kernels summed together, trained on 1958&ndash;2001 data and extrapolated forward.</figcaption>
       </figure>
 
       <h2>Ouput</h2>
@@ -309,7 +308,7 @@
 
       <figure>
         <img src="images/plot4.png" alt="Plot of predictive standard deviation over time, showing it roughly triples during the hidden gap">
-        <figcaption><span class="fignum">Figure 4.</span> The model's own uncertainty over time; it roughly triples during the hidden 15-year stretch, then drops back down the moment real data resumes.</figcaption>
+        <figcaption><span class="fignum">Figure 4.</span> The model's own uncertainty over time &mdash; it roughly triples during the hidden 15-year stretch, then drops back down the moment real data resumes.</figcaption>
       </figure>
 
     </article>
